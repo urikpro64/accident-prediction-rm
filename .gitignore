@@ -62,3 +62,6 @@ Thumbs.db
 
 # Windows
 Thumbs.db
+
+# Flask
+__pycache__/
