@@ -46,7 +46,7 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         
         ```bash
         cd backend
-        py run.py
+        flask run
         ```
 
         - **Frontend**
