@@ -27,17 +27,25 @@ def captureImagePerSec(video_path:str, output_path:str):
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     frame_count = 0
     success = True
+    imagelist = []
     while success:
         success, frame = cap.read()
 
         if frame_count % fps == 0:
-            image_path = os.path.join(output_path, f"frame_{frame_count // fps}.jpg")
+            filename = f"frame_{frame_count // fps}.jpg"
+            image_path = os.path.join(output_path, filename)
+            image = {
+                "image": output_path + f'/{filename}',
+                "sec": frame_count // fps
+            }
+            imagelist.append(image)
             cv2.imwrite(image_path, frame)
             
         frame_count += 1
 
     cap.release()
-    return True
+    print(imagelist)
+    return imagelist
 
 def predictImage(img_path):
     img = image.load_img(img_path, target_size=(img_height, img_width))
@@ -45,7 +53,6 @@ def predictImage(img_path):
     img_array = tf.expand_dims(img_array, 0)
     predict_result = loaded_model.predict(img_array)
     percentage = {
-        'image': img_path,
         'accident': f'{predict_result[0][0]*100:.2f}',
         'nonaccident': f'{predict_result[0][1]*100:.2f}'
     }
@@ -54,14 +61,13 @@ def predictImage(img_path):
 
 def predictVideo(video_path):
     output_path = 'temp'
-    captureImagePerSec(video_path, output_path)
+    imagelist = captureImagePerSec(video_path, output_path)
     result = []
-    
-    for filename in os.listdir(output_path):
-        if filename.endswith('.jpg') :
-            img_path = output_path + f'/{filename}'
-            predict_result = predictImage(img_path)
-            result.append(predict_result)
+    for image in imagelist:
+        print(image['image'])
+        img_path = image['image']
+        predict_result = predictImage(img_path)
+        result.append({**predict_result,**image})
     
     return result
 
@@ -73,4 +79,3 @@ def getOnlyAccidentPrediction(video_path):
             result.append(predict_result)
             
     return result
-

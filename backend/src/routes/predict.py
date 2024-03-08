@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
-
-from src.controllers.predictController import getLoadedModel, getPredictionByImg, getPredictionByVideo, getTensorflowVersion
+from src.controllers.predictController import getLoadedModel, getPredictionByImg, getPredictionByVideo, getOnlyAccidentPrediction, getTensorflowVersion
 predictRoute = Blueprint('predict',__name__)
 
 @predictRoute.route('/')
