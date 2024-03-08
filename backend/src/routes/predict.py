@@ -30,9 +30,11 @@ def predictImage():
     }
     return jsonify(response)
 
-@predictRoute.route('/video')
+@predictRoute.route('/video', methods=['POST'])
 def predictVideo():
-    result = getPredictionByVideo('targetVideo/accident_02.mp4')
+    video_file = request.files['file']
+    video_file.save('targetVideo/'+video_file.filename)
+    result = getPredictionByVideo('targetVideo/'+video_file.filename)
     response = {
         'status': 200,
         'result' : result

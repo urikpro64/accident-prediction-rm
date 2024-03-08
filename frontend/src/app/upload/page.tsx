@@ -10,8 +10,8 @@ export default function UploadPage() {
     const handleUplaod = async (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         setFile(selectedFile || null);
-        console.log(file?.name);
         if (file) {
+            console.log(file.name);
             await submitUpload(file);
             console.log(result);
         }
@@ -27,12 +27,11 @@ export default function UploadPage() {
         formData.append('file', file)
 
         try {
-            const response = await fetch('http://localhost:5000/predict/image', {
+            const response = await fetch('http://localhost:5000/predict/video', {
                 method: "POST",
                 body: formData,
             }).then(response => response.json())
-                .then(json => {return json})
-            console.log(response);
+                .then(json => { return json })
             setResult(response);
         } catch (error) {
             console.log(error);
@@ -45,10 +44,19 @@ export default function UploadPage() {
             <div className="flex flex-col w-full h-full">
                 <div className="flex flex-row w-full h-full p-2 space-x-2">
                     <div className="flex w-full h-full bg-white p-2">
-                        <label htmlFor="inputfile" className="flex w-full h-full items-center justify-center text-black">
-                            Input File
-                            <input id="inputfile" type="file" onChange={handleUplaod} className="hidden"></input>
-                        </label>
+                        { !file &&
+                            <label htmlFor="inputfile" className="flex w-full h-full items-center justify-center text-black">
+                                Input File
+                                <input id="inputfile" type="file" onChange={handleUplaod} className="hidden"></input>
+                            </label>
+                        }
+                        { file &&
+                            <div className="flex w-full h-full items-center justify-center text-black">
+                                <video controls>
+                                    <source src={URL.createObjectURL(file)} type={file.type}/>
+                                </video>
+                            </div>
+                        }
                     </div>
                     <div className="grid grid-cols-2 gap-2 w-1/3 h-full bg-white p-2">
                         <div className="flex flex-col items-center">

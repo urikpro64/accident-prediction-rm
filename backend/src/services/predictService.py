@@ -22,6 +22,7 @@ def load_Model():
 loaded_model = load_Model()
 
 def captureImagePerSec(video_path:str, output_path:str):
+    print(video_path)
     cap = cv2.VideoCapture(video_path)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     frame_count = 0
