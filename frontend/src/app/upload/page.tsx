@@ -6,34 +6,31 @@ import { ChangeEvent, FormEvent, useState } from "react";
 export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null);
     const [result, setResult] = useState({});
+    const [error, setError] = useState('');
 
     const handleUplaod = async (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         setFile(selectedFile || null);
-        if (file) {
-            console.log(file.name);
-            await submitUpload(file);
-            console.log(result);
+        if (selectedFile) {
+            console.log(selectedFile.name);
+            await submitUpload(selectedFile);
         }
     }
 
     const submitUpload = async (inputFile: File) => {
-        if (!file) {
-            console.log("No file selected");
-            return;
-        }
-
         const formData = new FormData();
-        formData.append('file', file)
+        formData.append('file', inputFile)
 
         try {
             const response = await fetch('http://localhost:5000/predict/video', {
                 method: "POST",
                 body: formData,
-            }).then(response => response.json())
-                .then(json => { return json })
-            setResult(response);
+            })
+            const data = await response.json();
+            setResult(data);
+            console.log(data);
         } catch (error) {
+            setError('Failed to upload file');
             console.log(error);
         }
     };
