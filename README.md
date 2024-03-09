@@ -41,7 +41,7 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         yarn install
         ```
 
-    3. **Running Appliecation:**
+    3. **Running Application:**
         - **Backend**
         
         ```bash
