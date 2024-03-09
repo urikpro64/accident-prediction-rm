@@ -1,8 +1,9 @@
 export type Predict = {
-    accident: String,
-    nonaccident: String,
+    accident: string,
+    nonaccident: string,
     sec: number,
-    image: String,
+    image: string,
+    imageBase64: string,
 }
 
 export type Result = {

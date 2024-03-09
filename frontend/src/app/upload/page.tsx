@@ -4,6 +4,86 @@ import { SideNav } from "../components/Side-Nav";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Result } from "./types";
 
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
+
+// const results: Result = {
+//     status: 1,
+//     result: [
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//         {
+//             accident: 'test',
+//             nonaccident: 'test2',
+//             sec: 2,
+//             image: 'test3',
+//         },
+//     ],
+// };
+
 export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null);
     const [result, setResult] = useState<Result>();
@@ -31,9 +111,10 @@ export default function UploadPage() {
         formData.append('file', inputFile)
 
         try {
-            const response = await fetch('http://localhost:5000/predict/video', {
+            const response = await fetch(`${API_URL}/predict/video`, {
                 method: "POST",
                 body: formData,
+                // mode: 'no-cors'
             })
             const data = await response.json();
             setResult(data);
@@ -45,11 +126,11 @@ export default function UploadPage() {
     };
 
     return (
-        <div className="flex flex-row w-full max-h-full h-full  bg-gray-300">
+        <div className="flex flex-1 bg-gray-300 overflow-hidden">
             <SideNav />
             <div className="flex flex-col h-full w-full">
-                <div className="flex flex-row w-full h-full p-2 space-x-2">
-                    <div className="w-full h-full bg-gray-500">
+                <div className="flex flex-1 overflow-hidden">
+                    <div className="flex flex-1 p-2 bg-gray-500">
                         {!file &&
                             <label htmlFor="inputfile" className="flex w-full h-full items-center justify-center text-black">
                                 Input File
@@ -64,22 +145,23 @@ export default function UploadPage() {
                             </div>
                         }
                     </div>
-                    <div className="flex flex-col space-y-2 bg-white p-2 overflow-y-scroll">
+                    <div className="flex flex-col p-2 space-y-1 overflow-y-auto transition-all">
                         {result && result.result.map((predict, index) => (
+
                             <div
                                 key={`predict_${index}`}
                                 onClick={() => handleSetCurrentTime(predict.sec)}
                                 className="flex flex-col w-full rounded-md p-1 text-black border-2 active:border-black"
                             >
+                                <img src={`data:image/jpeg;base64,${predict.imageBase64}`}></img>
                                 <div>accident: {predict.accident}</div>
                                 <div>nonaccident: {predict.nonaccident}</div>
-                                <div>sec: {new Date(predict.sec*1000).toISOString().substring(11, 19)}</div>
+                                <div>sec: {new Date(predict.sec * 1000).toISOString().substring(11, 19)}</div>
                             </div>
                         ))}
-                        
                     </div>
                 </div>
-                <div className="flex flex-row w-full h-fit justify-between text-black">
+                <div className="flex justify-between text-black py-1.5">
                     <ArrowLeftCircle className="w-10" />
                     <ArrowRightCircle className="w-10" />
                 </div>

@@ -1,3 +1,4 @@
+import base64
 import numpy as np
 import os
 import cv2
@@ -21,6 +22,21 @@ def load_Model():
 
 loaded_model = load_Model()
 
+def process_image_for_frontend(image_path):
+    image = cv2.imread(image_path)
+    # Resize the image
+    
+    resized_image = cv2.resize(image, (img_width, img_height))
+
+    # Optionally redact sensitive regions
+    # ... (code to redact specific areas)
+
+    # Convert to base64 (optional)
+    retval, buffer = cv2.imencode('.jpg', resized_image)
+    image_base64 = base64.b64encode(buffer).decode('utf-8')
+
+    return image_base64  # Or return the resized image
+
 def captureImagePerSec(video_path:str, output_path:str):
     print(video_path)
     cap = cv2.VideoCapture(video_path)
@@ -34,7 +50,9 @@ def captureImagePerSec(video_path:str, output_path:str):
         if frame_count % fps == 0:
             filename = f"frame_{frame_count // fps}.jpg"
             image_path = os.path.join(output_path, filename)
+            image_process = process_image_for_frontend(output_path + f'/{filename}')
             image = {
+                "imageBase64": image_process,
                 "image": output_path + f'/{filename}',
                 "sec": frame_count // fps
             }
