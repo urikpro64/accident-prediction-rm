@@ -74,10 +74,15 @@ export default function UploadPage() {
                                 <div>accident: {predict.accident}</div>
                                 <div>nonaccident: {predict.nonaccident}</div>
                                 <div>sec: {new Date(predict.sec*1000).toISOString().substring(11, 19)}</div>
+                                {predict.nonaccident < predict.accident ? (
+                                    <div className="text-lg font-bold text-red-500">Accident</div>
+                                ) : (
+                                    <div className="text-lg font-bold text-green-500">Non-Accident</div>
+                                )}
                             </div>
                         ))}
-                        
                     </div>
+
                 </div>
                 <div className="flex flex-row w-full h-fit justify-between text-black">
                     <ArrowLeftCircle className="w-10" />
