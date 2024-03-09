@@ -156,10 +156,16 @@ export default function UploadPage() {
                                 <img src={`data:image/jpeg;base64,${predict.imageBase64}`}></img>
                                 <div>accident: {predict.accident}</div>
                                 <div>nonaccident: {predict.nonaccident}</div>
-                                <div>sec: {new Date(predict.sec * 1000).toISOString().substring(11, 19)}</div>
+                                <div>sec: {new Date(predict.sec*1000).toISOString().substring(11, 19)}</div>
+                                {predict.nonaccident < predict.accident ? (
+                                    <div className="text-lg font-bold text-red-500">Accident</div>
+                                ) : (
+                                    <div className="text-lg font-bold text-green-500">Non-Accident</div>
+                                )}
                             </div>
                         ))}
                     </div>
+
                 </div>
                 <div className="flex justify-between text-black py-1.5">
                     <ArrowLeftCircle className="w-10" />
