@@ -16,7 +16,7 @@ def checkTensorflowVersion():
     return tf.__version__
 
 def load_Model():
-    loaded_model = keras.models.load_model('model/model')
+    loaded_model = keras.models.load_model('model/best_model.h5')
     return loaded_model
 
 loaded_model = load_Model()
