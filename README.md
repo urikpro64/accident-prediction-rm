@@ -8,7 +8,7 @@ This project, named "Accident Prediction Web Application", aims to utilize video
 - Frontend: NextJs(14.0.4)
 - Additional libraries:
     * tensorflow(2.15.0)
-    * opencv-python(4.8.0.76)
+    * opencv-python(4.9.0.80)
 
 ## Key Features
 - Uploads video files for non-realtime or offline analysis.
@@ -19,10 +19,10 @@ This project, named "Accident Prediction Web Application", aims to utilize video
 ## Getting Started
 - **Prerequisites:**
     - Python(3.11.7)
-    - NodeJs(19.9.0) \*optional version
+    - NodeJs(19.9.0) \*or above
 
 - **Installation:**
-    1. Clone the repository
+    1. Clone the repository (Please make sure you don't clone it on Cloud Storage like OneDrive etc.)
     ```bash
         git clone https://github.com/urikpro64/accident-prediction-rm.git
     ```
@@ -47,7 +47,10 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         ```bash
         cd backend
         flask run
+        #--------------------------#
+        flask --debug run #for debug mode
         ```
+        
 
         - **Frontend**
         
