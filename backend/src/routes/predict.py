@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, jsonify, request
 from src.controllers.predictController import getLoadedModel, getPredictionByImg, getPredictionByVideo, getOnlyAccidentPrediction, getTensorflowVersion
 predictRoute = Blueprint('predict',__name__)
