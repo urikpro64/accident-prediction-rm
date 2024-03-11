@@ -7,9 +7,9 @@ export default function HomePage() {
     const [onClickSearch, setOnClickSearch] = useState<boolean>(false);
     const [onClickPlus, setOnClickPlus] = useState<boolean>(false);
     return (
-        <div className="flex flex-row w-full h-full">
+        <div className="flex flex-1 bg-gray-200 overflow-hidden">
             <SideNav></SideNav>
-            <div className="w-full h-full bg-gray-300 text-black">
+            {/* <div className="w-full h-full bg-gray-300 text-black">
                 <div className="flex flex-row justify-between items-center p-2">
                     <div className="flex flex-row w-full justify-center">
                         <div className="flex flex-row w-40 bg-white rounded-full px-3 py-2 space-x-1">
@@ -50,7 +50,7 @@ export default function HomePage() {
                         </div>
                     </div>
                 </>
-            ) : null}
+            ) : null} */}
             <div className=""></div>
         </div>
     )

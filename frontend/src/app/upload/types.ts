@@ -3,7 +3,8 @@ export type Predict = {
     nonaccident: string,
     sec: number,
     image: string,
-    imageBase64: string,
+    imageBase64: string | null,
+    imageURL: string
 }
 
 export type Result = {

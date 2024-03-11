@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tensorflow/tfjs-node": "3.19.0",
     "axios": "^1.6.5",
     "lucide-react": "^0.307.0",
     "next": "14.0.4",

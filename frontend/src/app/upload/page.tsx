@@ -153,7 +153,7 @@ export default function UploadPage() {
                                 onClick={() => handleSetCurrentTime(predict.sec)}
                                 className="flex flex-col w-full rounded-md p-1 text-black border-2 active:border-black"
                             >
-                                <img src={`data:image/jpeg;base64,${predict.imageBase64}`}></img>
+                                <img src={`${API_URL}/${predict.imageURL}`}></img>
                                 <div>accident: {predict.accident}</div>
                                 <div>nonaccident: {predict.nonaccident}</div>
                                 <div>sec: {new Date(predict.sec*1000).toISOString().substring(11, 19)}</div>
