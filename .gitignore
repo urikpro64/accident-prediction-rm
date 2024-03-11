@@ -67,5 +67,5 @@ Thumbs.db
 __pycache__/
 
 # Backend
-/backend/temp/*
-/backend/targetVideo/*
+/backend/data
+/backend/temp

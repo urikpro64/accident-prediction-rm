@@ -1,5 +1,7 @@
-from src.services.predictService import checkTensorflowVersion, getOnlyAccidentPrediction, load_Model, predictImage, predictVideo
-
+import asyncio
+from werkzeug.datastructures import FileStorage 
+from src.services.dataService import makeDirForStreaming, saveVideoForPredict
+from src.services.predictService import checkTensorflowVersion, load_Model, predictImage, predictVideo, captureImageFromStreaming
 
 def getTensorflowVersion():
     return checkTensorflowVersion()
@@ -12,10 +14,12 @@ def getPredictionByImg(img_path):
     response = predictImage(img_path)
     return response
 
-def getPredictionByVideo(video_path):
-    response = predictVideo(video_path)
+async def getPredictionByVideo(video_file:FileStorage, onlyAccident= True):
+    file_name = saveVideoForPredict(video_file)
+    response = await predictVideo(file_name, onlyAccident)
     return response
 
-def getOnlyAccident(video_path):
-    response = getOnlyAccidentPrediction(video_path)
-    return response
+async def getPredictionByStreaming(url):
+    camera_id = 'test_1'
+    makeDirForStreaming(camera_id)
+    asyncio.run(captureImageFromStreaming(url, camera_id))
