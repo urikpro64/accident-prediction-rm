@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./frontend  # Path to your Next.js frontend directory
+    ports:
+      - "3000:3000"  # Map container port 3000 to host port 3000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:5000  # Set environment variable for backend URL
+
+  backend:
+    build: ./backend  # Path to your Flask backend directory
+    ports:
+      - "5000:5000"  # Map container port 5000 to host port 5000
+    depends_on:
+      - mysql  # Wait for MySQL to be ready before starting backend
+    environment:
+      - FLASK_ENV=production
+      - MAIN_UPLOAD_PATH=data
+      - SUB_VIDEO_PATH=videos
+      - SUB_IMAGE_PATH=images
+
+  mysql:
+    build: ./database  # Path to your MySQL Dockerfile
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/mysql/data  # Persist MySQL data on host machine
+    environment:
+      - MYSQL_ROOT_PASSWORD=mydatabasepassword
+
+volumes:
+  mysql-data:  # Define the volume for MySQL data

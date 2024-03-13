@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-from .routes import auth, predict
+from .routes import auth, predict, data
 
 def create_app() :
     app = Flask(__name__)
@@ -24,5 +24,6 @@ def create_app() :
     #Register blueprint
     app.register_blueprint(auth.authRoute, url_prefix='/auth')
     app.register_blueprint(predict.predictRoute, url_prefix='/predict')
-
+    app.register_blueprint(data.dataRoute, url_prefix='/data')
+    
     return app

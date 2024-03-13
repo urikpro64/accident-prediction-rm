@@ -1,10 +1,18 @@
 import os
 from uuid import uuid4
 from werkzeug.datastructures import FileStorage 
+import mysql.connector
 
 MAIN_UPLOAD_PATH = os.getenv('MAIN_UPLOAD_PATH')
 SUB_VIDEO_PATH = os.getenv('SUB_VIDEO_PATH')
 SUB_IMAGE_PATH = os.getenv('SUB_IMAGE_PATH')
+
+mydb = mysql.connector.connect(
+    host = "localhost",
+    user = os.getenv('DATABASE_USERNAME'),
+    password = os.getenv('DATABASE_PASSWORD'),
+    database = os.getenv('DATABASE_NAME')
+)
 
 def makeDir(path):
     try:
@@ -19,9 +27,11 @@ def makeDir(path):
         print(f"Error creating directory: {e}")
         return False
 
-def makeDirForStreaming(camera_id:str):
-    path = os.path.join(MAIN_UPLOAD_PATH, SUB_IMAGE_PATH,camera_id)
+def makeDirForStreaming():
+    uuid = str(uuid4())
+    path = os.path.join(MAIN_UPLOAD_PATH, SUB_IMAGE_PATH, uuid)
     makeDir(path)
+    return uuid
 
 def saveFile(file: FileStorage, file_name):
     upload_path = os.path.join(MAIN_UPLOAD_PATH, SUB_VIDEO_PATH)
@@ -39,3 +49,34 @@ def saveVideoForPredict(file: FileStorage):
     upload_path = saveFile(file, file_name)
     return file_name
 
+def saveDatabaseCamera(camera_id, camera_name, address):
+    mycursor = mydb.cursor()
+    sql_query = "INSERT INTO camera (cameraId, cameraName, address) VALUES (%s, %s, %s)"
+    val = (camera_id, camera_name, address)
+    mycursor.execute(sql_query, val)
+    mydb.commit()
+    return True
+
+def removeDatabaseCamera(camera_id):
+    mycursor = mydb.cursor()
+
+    sql = "DELETE FROM camera WHERE cameraId = %s"
+    val = (camera_id,)  # Use a tuple for a single parameter
+
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    # Check if a row was actually deleted (affected_rows)
+    if mycursor.rowcount > 0:
+        return True
+    else:
+        print("No row deleted from camera table (cameraId might not exist).")
+        return False
+
+def saveDatabasePrediction(predictionId, cameraId, imageURL, accident, nonaccident, timestamp, sec=None):
+    mycursor = mydb.cursor()
+    sql_query = "INSERT INTO prediction (predictionId, cameraId, imageURL, accident, nonaccident, sec, timestamp) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    val = (predictionId, cameraId, imageURL, accident, nonaccident, timestamp, sec)
+    mycursor.execute(sql_query, val)
+    mydb.commit()
+    return True

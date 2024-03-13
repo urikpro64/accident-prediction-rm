@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
 import { SideNav } from "../components/Side-Nav";
@@ -153,10 +154,14 @@ export default function UploadPage() {
                                 onClick={() => handleSetCurrentTime(predict.sec)}
                                 className="flex flex-col w-full rounded-md p-1 text-black border-2 active:border-black"
                             >
-                                <img src={`${API_URL}/${predict.imageURL}`}></img>
+                                <img
+                                    src={`${API_URL}/${predict.imageURL}`}
+                                    className="w-96"
+                                    alt={predict.imageURL}
+                                />
                                 <div>accident: {predict.accident}</div>
                                 <div>nonaccident: {predict.nonaccident}</div>
-                                <div>sec: {new Date(predict.sec*1000).toISOString().substring(11, 19)}</div>
+                                <div>sec: {new Date(predict.sec * 1000).toISOString().substring(11, 19)}</div>
                                 {predict.nonaccident < predict.accident ? (
                                     <div className="text-lg font-bold text-red-500">Accident</div>
                                 ) : (

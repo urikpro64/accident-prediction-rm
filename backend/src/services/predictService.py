@@ -1,13 +1,16 @@
 import asyncio
 import base64
+from math import floor
 import os
 import time
+from uuid import uuid4
 import cv2
 import tensorflow as tf
 import keras
 from keras.preprocessing import image
+import threading
 
-from .dataService import makeDir
+from .dataService import makeDir, removeDatabaseCamera, saveDatabaseCamera, saveDatabasePrediction
 
 MAIN_UPLOAD_PATH = os.getenv('MAIN_UPLOAD_PATH')
 SUB_VIDEO_PATH = os.getenv('SUB_VIDEO_PATH')
@@ -96,7 +99,7 @@ async def predictVideo(file_name: str, onlyAccident: bool):
     result = {
         **predict_result,
         'sec': image['sec'],
-        'imageURL': f'/images/{camera_id}/{image["filename"]}'
+        'imageURL': f'images/{camera_id}/{image["filename"]}'
         }
     if not onlyAccident:
       results.append(result)
@@ -104,10 +107,35 @@ async def predictVideo(file_name: str, onlyAccident: bool):
       results.append(result)
   return results
 
-async def captureImageFromStreaming(url: str, camera_id: str):
+status = {}
+
+def predictImageForStreaming(img_path):
+  img = image.load_img(img_path, target_size=(img_height, img_width))
+  img_array = image.img_to_array(img)
+  img_array = tf.expand_dims(img_array, 0)
+ 
+  predict_result = loaded_model.predict(img_array) 
+  
+  percentage = {
+    'accident': f'{predict_result[0][0]*100:.2f}',
+    'nonaccident': f'{predict_result[0][1]*100:.2f}'
+  }
+  
+  return percentage
+
+def stopPredictStreaming(camera_id: str):
+  status[camera_id] = False
+
+def predictStreaming(camera_id: str, url: str):
   image_output_dir = os.path.join(IMAGE_PATH, camera_id)
   
-  async def capture_loop():
+  saveDatabaseCamera(
+    camera_id=camera_id,
+    camera_name='test',
+    address=url
+    )
+  
+  def capture():
     index = 0
     cap = cv2.VideoCapture(url)  # Open video capture
 
@@ -115,25 +143,32 @@ async def captureImageFromStreaming(url: str, camera_id: str):
       print(f"Error opening video capture for {url}")
       return  # Exit loop if opening fails
 
-    while True:
+    status[camera_id] = True
+    print("status", camera_id, status[camera_id])
+
+    while status[camera_id]:
       ret, frame = cap.read()
 
       if not ret:
         print("Error capturing frame")
         break
 
-      filename = f"frame_{index}.jpg"
+      filename = f"frame_{floor(time.time())}.jpg"
       image_path = os.path.join(image_output_dir, filename)
       cv2.imwrite(image_path, frame)
-      index += 1
 
-      await asyncio.sleep(1)  # Delay between captures
-
+      predict_result = predictImageForStreaming(image_path)
+      imageURL = f'images/{camera_id}/{filename}'
+      if float(predict_result['accident']) > float(predict_result['nonaccident']):
+        index += 1
+        saveDatabasePrediction(str(uuid4()), camera_id, imageURL, predict_result['accident'], predict_result['nonaccident'], floor(time.time()))
+      time.sleep(1)
+    
+    print("Number of prediction in Accident from", camera_id, "has", index, "image")
+    # removeDatabaseCamera(camera_id)
+    del status[camera_id]
     cap.release()  # Release video capture resources
 
-  capture_task = asyncio.create_task(capture_loop())
-  await capture_task  # Wait for capture loop to finish
-  
-# async def predictStreaming(url: str, camera_id: str):
-  
-  
+  # capture_task = asyncio.create_task(capture_loop())
+  task = threading.Thread(target=capture)
+  task.start()

@@ -1,6 +1,8 @@
 Flask[async]
 tensorflow==2.15.0
 python-dotenv==1.0.0
-opencv-python==4.9.0.80
+opencv-python-headless
+# opencv-python==4.9.0.80
 pillow==9.4.0
 flask_cors==3.0.10
+mysql-connector-python
