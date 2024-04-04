@@ -7,7 +7,13 @@ export type Predict = {
     imageURL: string
 }
 
-export type Result = {
+export type ResultPredictImage = {
     status: number,
     result: Array<Predict>
+}
+
+export type ResultChangeModel = {
+    status: number,
+    isChange: boolean,
+    isChanging: boolean
 }

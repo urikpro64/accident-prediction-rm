@@ -1,93 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
+import { RefreshCw, Upload } from "lucide-react";
 import { SideNav } from "../components/Side-Nav";
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
-import { Result } from "./types";
+import { ChangeEvent, useRef, useState } from "react";
+import { ResultChangeModel, ResultPredictImage } from "./types";
+import { CardPredict } from "./CardPredict";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
-// const results: Result = {
-//     status: 1,
-//     result: [
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//         {
-//             accident: 'test',
-//             nonaccident: 'test2',
-//             sec: 2,
-//             image: 'test3',
-//         },
-//     ],
-// };
-
 export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null);
-    const [result, setResult] = useState<Result>();
+    const [result, setResult] = useState<ResultPredictImage | null>(null);
     const [error, setError] = useState('');
 
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -98,28 +21,45 @@ export default function UploadPage() {
         }
     };
 
+    const handleReset = () => {
+        if (videoRef.current) {
+            videoRef.current.currentTime = 0;
+        }
+        setFile(null);
+        setResult(null);
+    };
+
     const handleUplaod = async (e: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
+        handleReset();
         setFile(selectedFile || null);
         if (selectedFile) {
             console.log(selectedFile.name);
-            await submitUpload(selectedFile);
+            await submitUpload(selectedFile, '/predict/video');
         }
     }
 
-    const submitUpload = async (inputFile: File) => {
+    const handleUplaodModel = async (e: ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0];
+        handleReset();
+        if (selectedFile) {
+            console.log(selectedFile.name);
+            await submitUpload(selectedFile, '/predict/changemodel');
+        }
+    }
+
+    const submitUpload = async (inputFile: File, api_route: string) => {
         const formData = new FormData();
         formData.append('file', inputFile)
 
         try {
-            const response = await fetch(`${API_URL}/predict/video`, {
+            const response = await fetch(`${API_URL}${api_route}`, {
                 method: "POST",
                 body: formData,
                 // mode: 'no-cors'
             })
             const data = await response.json();
             setResult(data);
-            console.log(data);
         } catch (error) {
             setError('Failed to upload file');
             console.log(error);
@@ -131,50 +71,44 @@ export default function UploadPage() {
             <SideNav />
             <div className="flex flex-col h-full w-full">
                 <div className="flex flex-1 overflow-hidden">
-                    <div className="flex flex-1 p-2 bg-gray-500">
-                        {!file &&
-                            <label htmlFor="inputfile" className="flex w-full h-full items-center justify-center text-black">
-                                Input File
-                                <input id="inputfile" type="file" onChange={handleUplaod} className="hidden"></input>
+                    <div className="flex flex-1 flex-col space-y-4 p-2 bg-gray-300">
+                        <div className="w-full flex flex-row space-x-3 justify-center items-center">
+                            <label htmlFor="inputmodel" className="flex flex-1 p-2 text-sm drop-shadow-md rounded-lg bg-white text-black cursor-pointer border-2 file:hidden">
+                                {"Choose your model file (.h5)"}
                             </label>
-                        }
-                        {file &&
-                            <div className="flex w-full h-full items-center justify-center text-black">
-                                <video controls ref={videoRef}>
-                                    <source src={URL.createObjectURL(file)} type={file.type} />
-                                </video>
-                            </div>
-                        }
+                            <input id="inputmodel" type="file" onChange={handleUplaodModel} hidden></input>
+                            <button onClick={handleReset} className="flex p-2 bg-red-400 hover:bg-red-500 rounded-lg drop-shadow-md">Reset</button>
+                        </div>
+                        <div className="flex flex-1 bg-white rounded-lg transition-transform duration-300">
+                            {!file &&
+                                <label htmlFor="inputfile" className="flex flex-1 flex-col space-y-2 items-center justify-center text-gray-600">
+                                    <Upload></Upload>
+                                    <div>Upload your video</div>
+                                    <input id="inputfile" type="file" onChange={handleUplaod} className="hidden"></input>
+                                </label>
+                            }
+                            {file &&
+                                <div className="flex flex-1 items-center justify-center">
+                                    <video controls ref={videoRef} className="rounded-md drop-shadow-md">
+                                        <source src={URL.createObjectURL(file)} type={file.type} />
+                                    </video>
+                                </div>
+                            }
+                        </div>
                     </div>
                     <div className="flex flex-col p-2 space-y-1 overflow-y-auto transition-all">
+                        {file && !result &&
+                            <div className="flex flex-1 p-2 bg-white justify-center items-center rounded-md">
+                                <RefreshCw className="w-40 animate-spin text-black"></RefreshCw>
+                            </div>
+                        }
                         {result && result.result.map((predict, index) => (
-
-                            <div
-                                key={`predict_${index}`}
-                                onClick={() => handleSetCurrentTime(predict.sec)}
-                                className="flex flex-col w-full rounded-md p-1 text-black border-2 active:border-black"
-                            >
-                                <img
-                                    src={`${API_URL}/${predict.imageURL}`}
-                                    className="w-96"
-                                    alt={predict.imageURL}
-                                />
-                                <div>accident: {predict.accident}</div>
-                                <div>nonaccident: {predict.nonaccident}</div>
-                                <div>sec: {new Date(predict.sec * 1000).toISOString().substring(11, 19)}</div>
-                                {predict.nonaccident < predict.accident ? (
-                                    <div className="text-lg font-bold text-red-500">Accident</div>
-                                ) : (
-                                    <div className="text-lg font-bold text-green-500">Non-Accident</div>
-                                )}
+                            <div key={index} onClick={() => handleSetCurrentTime(predict.sec)}>
+                                <CardPredict {...predict} ></CardPredict>
                             </div>
                         ))}
                     </div>
 
-                </div>
-                <div className="flex justify-between text-black py-1.5">
-                    <ArrowLeftCircle className="w-10" />
-                    <ArrowRightCircle className="w-10" />
                 </div>
             </div>
         </div>
