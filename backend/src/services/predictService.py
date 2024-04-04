@@ -9,7 +9,7 @@ import tensorflow as tf
 import keras
 from keras.preprocessing import image
 import threading
-
+from werkzeug.datastructures import FileStorage 
 from .dataService import makeDir, removeDatabaseCamera, saveDatabaseCamera, saveDatabasePrediction
 
 MAIN_UPLOAD_PATH = os.getenv('MAIN_UPLOAD_PATH')
@@ -23,11 +23,13 @@ batch_size = 100
 img_height = 250
 img_width = 250
 
+default_model = 'model/best_model.h5'
+
 def checkTensorflowVersion():
   return tf.__version__
 
-def load_Model():
-  loaded_model = keras.models.load_model('model/best_model.h5')
+def load_Model(file_path=default_model):
+  loaded_model = keras.models.load_model(f'{file_path}')
   return loaded_model
 
 loaded_model = load_Model()
@@ -126,12 +128,12 @@ def predictImageForStreaming(img_path):
 def stopPredictStreaming(camera_id: str):
   status[camera_id] = False
 
-def predictStreaming(camera_id: str, url: str):
+def predictStreaming(camera_id: str, camera_name: str, url: str):
   image_output_dir = os.path.join(IMAGE_PATH, camera_id)
   
   saveDatabaseCamera(
     camera_id=camera_id,
-    camera_name='test',
+    camera_name=camera_name,
     address=url
     )
   
@@ -165,10 +167,21 @@ def predictStreaming(camera_id: str, url: str):
       time.sleep(1)
     
     print("Number of prediction in Accident from", camera_id, "has", index, "image")
-    # removeDatabaseCamera(camera_id)
+    removeDatabaseCamera(camera_id)
     del status[camera_id]
     cap.release()  # Release video capture resources
 
   # capture_task = asyncio.create_task(capture_loop())
   task = threading.Thread(target=capture)
   task.start()
+  
+def changeModelPredict(model_file:FileStorage):
+  os.makedirs("data/model",exist_ok=True)
+  model_path = f'data/model/{model_file.filename}'
+  model_file.save(model_path)
+  global loaded_model
+  try:
+    loaded_model = load_Model(model_path)
+    return True
+  except:
+    return False

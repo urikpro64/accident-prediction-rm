@@ -19,6 +19,6 @@ async def getPredictionByVideo(video_file:FileStorage, onlyAccident= True):
     response = await predictVideo(file_name, onlyAccident)
     return response
 
-def getPredictionByStreaming(url):
+def getPredictionByStreaming(camera_name, url):
     camera_id = makeDirForStreaming()
-    predictStreaming(camera_id, url)
+    predictStreaming(camera_id, camera_name, url)

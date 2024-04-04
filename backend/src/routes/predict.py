@@ -1,6 +1,7 @@
+import os
 from flask import Blueprint, jsonify, request
 from ..controllers.predictController import getPredictionByVideo, getPredictionByStreaming
-from ..services.predictService import checkTensorflowVersion, predictImage, stopPredictStreaming
+from ..services.predictService import changeModelPredict, checkTensorflowVersion, load_Model, predictImage, stopPredictStreaming
 
 predictRoute = Blueprint('predict', __name__)
 
@@ -46,8 +47,8 @@ async def predictVideo():
 @predictRoute.route('/streaming/', methods=['GET','POST'])
 async def streamingPredict():
   url = request.json.get('url')
-  # url = 'https://camerai1.iticfoundation.org/hls/kk22.m3u8'
-  getPredictionByStreaming(url)
+  camera_name = request.json.get('camera_name')
+  getPredictionByStreaming(camera_name, url)
   response = {
     'message': 200
   }
@@ -61,3 +62,13 @@ async def stopStreamingPredict(camera_id):
   }
   return jsonify(response)
   
+@predictRoute.route('/changemodel', methods=['POST'])
+async def changeModel():
+  model_file = request.files['file']
+  isChange = changeModelPredict(model_file)
+  response = {
+    'status': 200,
+    'result': [],
+    'isChange': isChange
+  }
+  return jsonify(response)

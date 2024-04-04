@@ -8,7 +8,7 @@ SUB_VIDEO_PATH = os.getenv('SUB_VIDEO_PATH')
 SUB_IMAGE_PATH = os.getenv('SUB_IMAGE_PATH')
 
 mydb = mysql.connector.connect(
-    host = "localhost",
+    host = os.getenv('DATABASE_URL'),
     user = os.getenv('DATABASE_USERNAME'),
     password = os.getenv('DATABASE_PASSWORD'),
     database = os.getenv('DATABASE_NAME')
@@ -61,12 +61,11 @@ def removeDatabaseCamera(camera_id):
     mycursor = mydb.cursor()
 
     sql = "DELETE FROM camera WHERE cameraId = %s"
-    val = (camera_id,)  # Use a tuple for a single parameter
+    val = (camera_id,)
 
     mycursor.execute(sql, val)
     mydb.commit()
 
-    # Check if a row was actually deleted (affected_rows)
     if mycursor.rowcount > 0:
         return True
     else:
@@ -80,3 +79,20 @@ def saveDatabasePrediction(predictionId, cameraId, imageURL, accident, nonaccide
     mycursor.execute(sql_query, val)
     mydb.commit()
     return True
+
+def getAllCamera():
+    mycursor = mydb.cursor()
+    sql_query = "SELECT * FROM camera"
+    mycursor.execute(sql_query)
+    cameras = mycursor.fetchall()
+    response = []
+    for camera in cameras:
+        response.append({
+            "cameraName": camera[0],
+            "description": camera[1],
+            "address": camera[2],
+            "location": camera[3],
+            "cameraId": camera[4]
+        })
+    # print(response)
+    return response
