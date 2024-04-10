@@ -40,7 +40,7 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         cd frontend
         yarn install
         ```
-
+        Setup env follow the .env.example in each directory
     3. Running Application
         - **Backend**
         
@@ -57,17 +57,18 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         cd frontend
         yarn dev
         ```
-    **Use Docker Compose**
-    1. Clone the repository (Please make sure you don't clone it on Cloud Storage like OneDrive etc.)
-        ```bash
-        git clone https://github.com/urikpro64/accident-prediction-rm.git
-        ```
-    2. Running Application
-        ```bash
-        docker compose up
-        #--------------------------#
-        docker compose up -d # for detach
-        ```
+
+- **Use Docker Compose**
+   1. Clone the repository (Please make sure you don't clone it on Cloud Storage like OneDrive etc.)
+      ```bash
+      git clone https://github.com/urikpro64/accident-prediction-rm.git
+      ```
+   2. Running Application (Setup env in docker-compose.yml)
+      ```bash
+      docker compose up
+      #--------------------------#
+      docker compose up -d # for detach
+      ```
 ## Additional Notes
 
 - This project is for educational and research purposes only. It is not intended to be a replacement for professional safety measures or real-world accident detection systems.
