@@ -23,9 +23,9 @@ This project, named "Accident Prediction Web Application", aims to utilize video
 
 - **Installation:**
     1. Clone the repository (Please make sure you don't clone it on Cloud Storage like OneDrive etc.)
-    ```bash
+        ```bash
         git clone https://github.com/urikpro64/accident-prediction-rm.git
-    ```
+        ```
     2. Install dependencies
         - **Backend**
         
@@ -41,7 +41,7 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         yarn install
         ```
 
-    3. **Running Application:**
+    3. Running Application
         - **Backend**
         
         ```bash
@@ -51,12 +51,22 @@ This project, named "Accident Prediction Web Application", aims to utilize video
         flask --debug run #for debug mode
         ```
         
-
         - **Frontend**
         
         ```bash
         cd frontend
         yarn dev
+        ```
+    **Use Docker Compose**
+    1. Clone the repository (Please make sure you don't clone it on Cloud Storage like OneDrive etc.)
+        ```bash
+        git clone https://github.com/urikpro64/accident-prediction-rm.git
+        ```
+    2. Running Application
+        ```bash
+        docker compose up
+        #--------------------------#
+        docker compose up -d # for detach
         ```
 ## Additional Notes
 
